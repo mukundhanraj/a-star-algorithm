@@ -7,12 +7,13 @@ all units are in mm and degrees.
 Finding the optimal path from start node to goal node on a predefined map using A Star algorithm
 
 **Action Space of Robot**
-![Action Space of Robot](/res/action.png "Action Space of Robot")
+![Action Space of Robot](/res/action.png "Action Space of Robot") <br>
 Action Sets = {-60, -30, 0, 30, 60} <br>
 L = step size <br>
 <br>
 **Map**
 ![Map](/res/map.png "Map") <br>
+<br>
 **Finding Goal Node**
 ![Path](/res/path.png "Path") <br>
 If you reach within the threshold from the goal node, path found successfully. <br>
