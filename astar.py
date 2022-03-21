@@ -194,18 +194,23 @@ def animate(map_len, map_bre, validPoints, closed, path, parent_map):
     for point in validPoints:
         map_frame[map_bre - point[1], point[0]] = [255, 255, 255]
     cv2.circle(map_frame, (path[-1][0], map_bre
-               - path[-1][1]), 4, [255, 0, 0], -1)
-    cv2.circle(map_frame, (path[1][0], map_bre
-               - path[1][1]), 4, [255, 0, 255], -1)
+               - path[-1][1]), 1, [255, 0, 0], -1)
+    cv2.circle(map_frame, (path[0][0], map_bre
+               - path[0][1]), 1, [255, 0, 255], -1)
     for point in closed:
+        if(point == path[0]):
+            continue
         parent = parent_map[point]
-        point[1] = map_bre - point[1]
-        parent[1] = map_bre - parent[1]
-        cv2.line(map_frame, point, parent, [255, 255, 0], 4)
+        cv2.line(map_frame, (point[0], map_bre - point[1]),
+                 (parent[0], map_bre - parent[1]), [0, 0, 255], 1)
         cv2.imshow('map_frame', cv2.resize(map_frame, resize))
         cv2.waitKey(1)
     for point in path:
-        map_frame[map_bre - point[1], point[0]] = [0, 0, 127]
+        if(point == path[0]):
+            continue
+        parent = parent_map[point]
+        cv2.line(map_frame, (point[0], map_bre - point[1]),
+                 (parent[0], map_bre - parent[1]), [0, 255, 0], 2)
         cv2.imshow('map_frame', cv2.resize(map_frame, resize))
         cv2.waitKey(1)
     print('done, press any key to exit..')
@@ -217,7 +222,7 @@ if __name__ == '__main__':
     map_bre = 250
     clearance = 0
     radius = 15
-    step = 5
+    step = 10
     thresh = 1.5
 
     print('Please wait...')
