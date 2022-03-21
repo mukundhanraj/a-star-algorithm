@@ -8,9 +8,10 @@
 import heapq as heap
 import numpy as np
 import cv2
+import map
 
 
-def getAdjNodes(curr_node, validPoints, clearance):
+def getAdjNodes(curr_node, validPoints, clearance, step):
     """
     Definition
     ---
@@ -28,27 +29,29 @@ def getAdjNodes(curr_node, validPoints, clearance):
     """
     adjNodes = []
     moves = [-60, -30, 0, 30, 60]
-    # flag = True
+    flag = True
     for move in moves:
         # Checking if the point is valid
         angle = curr_node[-1] + move
-        x = int(curr_node[0] + 5 * np.cos(np.radians(angle)))
-        y = int(curr_node[1] + 5 * np.sin(np.radians(angle)))
+        x = int(curr_node[0] + (step * np.cos(np.radians(angle))))
+        y = int(curr_node[1] + (step * np.sin(np.radians(angle))))
         if (x, y) in validPoints:
-            adjNodes.append(((x, y, angle), 5))
             # Checking for clearance
-            # for i in range(clearance):
-            #     if not (curr_node[0] + move[0] + (i * move[0]), curr_node[1]
-            #             + move[1] + (i * move[1])) in validPoints:
-            #         flag = False
-            #         break
-            #     if not flag:
-            #         break
-            # if flag:
+            for i in range(clearance):
+                if not (int(x + (i * np.cos(np.radians(angle)))),
+                        int(y + (i * np.sin(np.radians(angle))))) \
+                         in validPoints:
+                    flag = False
+                    break
+                if not flag:
+                    break
+            if flag:
+                adjNodes.append(((x, y, angle), step))
     return adjNodes
 
 
-def updateNode(new_node, curr_node, node_cost, queue, parent_map, cost, goal):
+def updateNode(new_node, curr_node, node_cost, queue, parent_map, cost, goal,
+               thresh):
     """
     Definition
     ---
@@ -75,17 +78,19 @@ def updateNode(new_node, curr_node, node_cost, queue, parent_map, cost, goal):
         new_node[0:2]) - np.asarray(goal[0:2])))
     new_cost = node_cost[curr_node] + cost + dist
     temp_cost = node_cost.get(new_node)
+
     if not temp_cost or (temp_cost > new_cost):
         node_cost[new_node] = new_cost
         parent_map[new_node[0:2]] = curr_node[0:2]
         heap.heappush(queue, (new_cost, new_node))
+
     if abs(np.linalg.norm(np.asarray(goal[0:2])
-                          - np.asarray(new_node[0:2]))) < 2.5:
+                          - np.asarray(new_node[0:2]))) < thresh:
         return True, node_cost, queue, parent_map
     return False, node_cost, queue, parent_map
 
 
-def astar(start, goal, validPoints, clearance):
+def astar(start, goal, validPoints, clearance, step, thresh):
     """
     Definition
     ---
@@ -113,27 +118,29 @@ def astar(start, goal, validPoints, clearance):
     node_cost[start] = 0
     heap.heappush(queue, (0, start))
 
-    if abs(np.linalg.norm(np.asarray(goal[0:2])-np.asarray(start[0:2]))) < 2.5:
+    if abs(np.linalg.norm(np.asarray(goal[0:2])
+                          - np.asarray(start[0:2]))) < thresh:
         reached = True
         parent_map[goal[0:2]] = start[0:2]
 
     while not reached and queue:
         curr_cost, curr_node = heap.heappop(queue)
         closed.append(curr_node[0:2])
-        adjNodes = getAdjNodes(curr_node, validPoints, clearance)
+        adjNodes = getAdjNodes(curr_node, validPoints, clearance, step)
         for new_node, cost in adjNodes:
             if new_node[0:2] in closed:
                 continue
-            print('checking for node: ', new_node)
+            print('checking for node: ', new_node[0:2])
             flag, node_cost, queue, parent_map = updateNode(
-                new_node, curr_node, node_cost, queue, parent_map, cost, goal)
+                new_node, curr_node, node_cost, queue, parent_map, cost, goal, thresh)
             if flag:
+                closed.append(new_node[0:2])
                 reached = True
                 break
     return reached, parent_map, closed
 
 
-def getPath(parent_map, start, goal):
+def getPath(parent_map, start, goal, closed):
     """
     Definition
     ---
@@ -149,8 +156,8 @@ def getPath(parent_map, start, goal):
     ---
     path: list of all the points from starting to goal position
     """
-    curr_node = goal[0:2]
-    parent_node = parent_map[goal[0:2]]
+    curr_node = closed[-1]
+    parent_node = parent_map[curr_node]
     path = [curr_node]
     while not parent_node == start[0:2]:
         curr_node = parent_node
@@ -195,21 +202,22 @@ def animate(map_len, map_bre, validPoints, closed, path, parent_map):
 if __name__ == '__main__':
     map_len = 400
     map_bre = 250
-    clearance = 5
+    clearance = 0
+    radius = 15
+    step = 5
+    thresh = 1.5
 
-    validPoints = []
+    print('Please wait...')
+    validPoints = map.listOfValidPoints(map_len, map_bre, radius)
 
-    for i in range(map_len):
-        for j in range(map_bre):
-            validPoints.append((i, j))
-
-    start = 50, 20, 0
+    start = 40, 20, 0
     goal = 150, 100, 0
-
-    reached, parent_map, closed = astar(start, goal, validPoints, clearance)
+    print('starting')
+    reached, parent_map, closed = astar(
+        start, goal, validPoints, clearance, step, thresh)
     if reached:
         print('reached')
-        path = getPath(parent_map, start, goal)
+        path = getPath(parent_map, start, goal, closed)
         print(path)
         animate(map_len, map_bre, validPoints, closed, path, parent_map)
     else:

@@ -5,8 +5,6 @@
 #
 # Description: definig the given map
 
-import numpy as np
-
 
 def listOfValidPoints(map_len, map_bre, radius=1):
     """
@@ -29,31 +27,31 @@ def listOfValidPoints(map_len, map_bre, radius=1):
     # Defining Circle
     xc = 300
     yc = 185
-    rc = 40
+    rc = 40 + radius
 
     # Defining Polygon
-    x1 = 36
+    x1 = 36 - radius
     y1 = 185
-    x2 = 115
-    y2 = 210
-    x3 = 80
+    x2 = 115 + radius
+    y2 = 210 + radius
+    x3 = 80 + radius
     y3 = 180
-    x4 = 105
-    y4 = 100
+    x4 = 105 + radius
+    y4 = 100 - radius
 
     # Defining Hexagon
     x5 = 200
-    y5 = 140.4
-    x6 = 235
-    y6 = 120.2
-    x7 = 235
-    y7 = 79.8
+    y5 = 140.4 + radius
+    x6 = 235 + radius
+    y6 = 120.2 + radius
+    x7 = 235 + radius
+    y7 = 79.8 - radius
     x8 = 200
-    y8 = 59.6
-    x9 = 165
-    y9 = 79.8
-    x0 = 165
-    y0 = 120.2
+    y8 = 59.6 - radius
+    x9 = 165 - radius
+    y9 = 79.8 - radius
+    x0 = 165 - radius
+    y0 = 120.2 + radius
 
     # Slopes of the lines
     m21 = (y2 - y1) / (x2 - x1)
@@ -66,43 +64,27 @@ def listOfValidPoints(map_len, map_bre, radius=1):
     m98 = (y9 - y8) / (x9 - x8)
     m50 = (y5 - y0) / (x5 - x0)
 
-    rob = np.array([], np.int0)
-    for x in range(-radius, radius+1):
-        for y in range(-radius, radius+1):
-            if np.linalg.norm([x, y]) > radius:
-                rob = np.append(rob, [x, y])
-    rob = np.reshape(rob, (-1, 2))
-
-    for xm in range(map_len + 1):
-        for ym in range(map_bre + 1):
-            flag = False
-            for xr, yr in rob:
-                x = xm + xr
-                y = ym + yr
-                if ((x - xc)**2 + (y - yc)**2) <= rc**2:
-                    flag = True
-                if (y-y1) <= (m21*(x-x1)) and (y-y2) >= (m32*(x-x2)) and \
-                   (y-y4) >= (m14*(x-x4)):
-                    flag = True
-                if (y-y1) <= (m21*(x-x1)) and (y-y3) <= (m43*(x-x3)) and \
-                   (y-y4) >= (m14*(x-x4)):
-                    flag = True
-                if x <= x6 and x >= x9 and y >= y9 and y <= y6:
-                    flag = True
-                if y >= y6 and (y-y5) <= (m65*(x-x5)) and \
-                        (y-y0) <= (m50*(x-x0)):
-                    flag = True
-                if y <= y9 and (y-y7) >= (m87*(x-x7)) and \
-                        (y-y8) >= (m98*(x-x8)):
-                    flag = True
-                if flag:
-                    break
-            if not flag:
-                validPoints.append((x, y))
+    for x in range(radius, map_len + 1 - radius):
+        for y in range(radius, map_bre + 1 - radius):
+            if ((x - xc)**2 + (y - yc)**2) <= rc**2:
+                continue
+            if (y-y1) <= (m21*(x-x1)) and (y-y2) >= (m32*(x-x2)) and \
+                    (y-y4) >= (m14*(x-x4)):
+                continue
+            if (y-y1) <= (m21*(x-x1)) and (y-y3) <= (m43*(x-x3)) and \
+                    (y-y4) >= (m14*(x-x4)):
+                continue
+            if x <= x6 and x >= x9 and y >= y9 and y <= y6:
+                continue
+            if y >= y6 and (y-y5) <= (m65*(x-x5)) and (y-y0) <= (m50*(x-x0)):
+                continue
+            if y <= y9 and (y-y7) >= (m87*(x-x7)) and (y-y8) >= (m98*(x-x8)):
+                continue
+            validPoints.append((x, y))
     return validPoints
 
 
-def isPointValid(point, validPoints, clearance, radius = 1):
+def isPointValid(point, validPoints, clearance):
     """
     Definition
     ---
@@ -113,14 +95,13 @@ def isPointValid(point, validPoints, clearance, radius = 1):
     point : node of intrest
     validPoints : list of all valid points
     clearance : minimum distance required from obstacles
-    radius: radius of the robot (default, point robot)
 
     Returns
     ---
     bool : True if point is valid, False othervise
     """
-    for i in range(-clearance - radius, clearance + radius):
-        for j in range(-clearance - radius, clearance + radius):
+    for i in range(-clearance, clearance):
+        for j in range(-clearance, clearance):
             if not (point[0] + i, point[1] + j) in validPoints:
                 return False
     return True
