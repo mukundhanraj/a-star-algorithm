@@ -1,4 +1,14 @@
-def listOfValidPoints(map_len, map_bre, clearance):
+# map.py>
+#
+# Copyright (c) 2022 Rishabh Mukund
+# MIT License
+#
+# Description: definig the given map
+
+import numpy as np
+
+
+def listOfValidPoints(map_len, map_bre, radius=1):
     """
     Definition
     ---
@@ -8,6 +18,7 @@ def listOfValidPoints(map_len, map_bre, clearance):
     ---
     map_len : length of map
     map_bre : breadth of map
+    radius: radius of the robot (default, point robot)
 
     Returns
     ---
@@ -55,27 +66,43 @@ def listOfValidPoints(map_len, map_bre, clearance):
     m98 = (y9 - y8) / (x9 - x8)
     m50 = (y5 - y0) / (x5 - x0)
 
-    for x in range(map_len + 1):
-        for y in range(map_bre + 1):
-            if ((x - xc)**2 + (y - yc)**2) <= rc**2:
-                continue
-            if (y-y1) <= (m21*(x-x1)) and (y-y2) >= (m32*(x-x2)) and \
-               (y-y4) >= (m14*(x-x4)):
-                continue
-            if (y-y1) <= (m21*(x-x1)) and (y-y3) <= (m43*(x-x3)) and \
-               (y-y4) >= (m14*(x-x4)):
-                continue
-            if x <= x6 and x >= x9 and y >= y9 and y <= y6:
-                continue
-            if y >= y6 and (y-y5) <= (m65*(x-x5)) and (y-y0) <= (m50*(x-x0)):
-                continue
-            if y <= y9 and (y-y7) >= (m87*(x-x7)) and (y-y8) >= (m98*(x-x8)):
-                continue
-            validPoints.append((x, y))
+    rob = np.array([], np.int0)
+    for x in range(-radius, radius+1):
+        for y in range(-radius, radius+1):
+            if np.linalg.norm([x, y]) > radius:
+                rob = np.append(rob, [x, y])
+    rob = np.reshape(rob, (-1, 2))
+
+    for xm in range(map_len + 1):
+        for ym in range(map_bre + 1):
+            flag = False
+            for xr, yr in rob:
+                x = xm + xr
+                y = ym + yr
+                if ((x - xc)**2 + (y - yc)**2) <= rc**2:
+                    flag = True
+                if (y-y1) <= (m21*(x-x1)) and (y-y2) >= (m32*(x-x2)) and \
+                   (y-y4) >= (m14*(x-x4)):
+                    flag = True
+                if (y-y1) <= (m21*(x-x1)) and (y-y3) <= (m43*(x-x3)) and \
+                   (y-y4) >= (m14*(x-x4)):
+                    flag = True
+                if x <= x6 and x >= x9 and y >= y9 and y <= y6:
+                    flag = True
+                if y >= y6 and (y-y5) <= (m65*(x-x5)) and \
+                        (y-y0) <= (m50*(x-x0)):
+                    flag = True
+                if y <= y9 and (y-y7) >= (m87*(x-x7)) and \
+                        (y-y8) >= (m98*(x-x8)):
+                    flag = True
+                if flag:
+                    break
+            if not flag:
+                validPoints.append((x, y))
     return validPoints
 
 
-def isPointValid(point, validPoints, clearance):
+def isPointValid(point, validPoints, clearance, radius = 1):
     """
     Definition
     ---
@@ -86,13 +113,14 @@ def isPointValid(point, validPoints, clearance):
     point : node of intrest
     validPoints : list of all valid points
     clearance : minimum distance required from obstacles
+    radius: radius of the robot (default, point robot)
 
     Returns
     ---
     bool : True if point is valid, False othervise
     """
-    for i in range(-clearance, clearance):
-        for j in range(-clearance, clearance):
+    for i in range(-clearance - radius, clearance + radius):
+        for j in range(-clearance - radius, clearance + radius):
             if not (point[0] + i, point[1] + j) in validPoints:
                 return False
     return True
