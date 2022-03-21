@@ -1,5 +1,5 @@
 # A Star path planning
-# Copyright (c) 2022 Rishabh Mukund
+# Copyright (c) 2022 Mukundhan Rajendiran
 # MIT License
 #
 # Description: Using A star algorith to find the optimum path from staring
