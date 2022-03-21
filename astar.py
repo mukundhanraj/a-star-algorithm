@@ -202,7 +202,7 @@ def animate(map_len, map_bre, validPoints, closed, path, parent_map):
             continue
         parent = parent_map[point]
         cv2.line(map_frame, (point[0], map_bre - point[1]),
-                 (parent[0], map_bre - parent[1]), [255, 0, 0], 1)
+                 (parent[0], map_bre - parent[1]), [255, 0, 0], 2)
         cv2.imshow('map_frame', cv2.resize(map_frame, resize))
         cv2.waitKey(1)
     for point in path:
