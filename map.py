@@ -1,6 +1,6 @@
 # map.py>
 #
-# Copyright (c) 2022 Rishabh Mukund
+# Copyright (c) 2022 Mukundhan Rajendiran
 # MIT License
 #
 # Description: definig the given map
