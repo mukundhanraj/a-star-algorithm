@@ -15,7 +15,6 @@ if __name__ == '__main__':
     validPoints = []
     radius = 0
     clearance = 0
-    thresh = 0
 
     radius = input('Input the radius of the robot:\n')
     radius = int(radius)
@@ -58,6 +57,8 @@ if __name__ == '__main__':
 
     if flag:
         print('starting')
+        print(start)
+        print(goal)
         reached, parent_map, closed = astar.astar(
             start, goal, validPoints, clearance, step, thresh)
         if reached:

@@ -85,7 +85,6 @@ def updateNode(new_node, curr_node, node_cost, queue, parent_map, cost, goal,
         node_cost[new_node] = new_cost
         parent_map[new_node[0:2]] = curr_node[0:2]
         heap.heappush(queue, (new_cost, new_node))
-
     if abs(np.linalg.norm(np.asarray(goal[0:2])
                           - np.asarray(new_node[0:2]))) < thresh:
         return True, node_cost, queue, parent_map
@@ -121,7 +120,8 @@ def astar(start, goal, validPoints, clearance, step, thresh):
 
     node_cost[start] = 0
     heap.heappush(queue, (0, start))
-
+    print(abs(np.linalg.norm(np.asarray(goal[0:2])
+                             - np.asarray(start[0:2]))) < thresh)
     if abs(np.linalg.norm(np.asarray(goal[0:2])
                           - np.asarray(start[0:2]))) < thresh:
         reached = True
@@ -215,28 +215,3 @@ def animate(map_len, map_bre, validPoints, closed, path, parent_map):
         cv2.waitKey(1)
     print('done, press any key to exit..')
     cv2.waitKey(0)
-
-
-if __name__ == '__main__':
-    map_len = 400
-    map_bre = 250
-    clearance = 5
-    radius = 10
-    step = 10
-    thresh = 1.5
-
-    print('Please wait...')
-    validPoints = map.listOfValidPoints(map_len, map_bre, radius)
-
-    start = 40, 20, 90
-    goal = 150, 100, 0
-    print('starting')
-    reached, parent_map, closed = astar(
-        start, goal, validPoints, clearance, step, thresh)
-    if reached:
-        print('reached')
-        path = getPath(parent_map, start, goal, closed)
-        print(path)
-        animate(map_len, map_bre, validPoints, closed, path, parent_map)
-    else:
-        print('lol')
