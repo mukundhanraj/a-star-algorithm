@@ -8,7 +8,6 @@
 import heapq as heap
 import numpy as np
 import cv2
-import map
 
 
 def getAdjNodes(curr_node, validPoints, clearance, step):

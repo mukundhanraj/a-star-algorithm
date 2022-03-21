@@ -6,6 +6,10 @@ all units are in mm.
 # a-star-algorithm
 Finding the optimal path from start node to goal node on a predefined map using A Star algorithm
 
+<br>
+**Map**
+![Map](/res/map.png "Map")
+
 ## To install the dependencies
 ```
 sudo pip install numpy
@@ -25,4 +29,9 @@ python main.py
 ```
 This code will ask the user for radius of robot, clearance, step size, starting point and goal point on the map. After the path is found, It will animate all searched nodes and display the optimal path found using AStar algorithm <br>
 
-This ***videos*** folder contains example video for start point as 100, 180 and end point as 130, 230
+This ***videos*** folder contains example video for: <br>
+clearance: 5
+radius: 10
+step-size: 10
+test1.mp4: start = (100, 180, 0) and goal = (130, 230, 0) <br>
+test2.mp4: start = (40, 20, -180) and goal = (150, 100, 0)
