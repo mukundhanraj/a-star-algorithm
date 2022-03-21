@@ -1,5 +1,5 @@
 # main.py
-# Copyright (c) 2022 Rishabh Mukund
+# Copyright (c) 2022 Mukundhan Rajendiran
 # MIT License
 #
 # Description: Main method to calcualte optimal path using a-star
