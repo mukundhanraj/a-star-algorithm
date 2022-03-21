@@ -8,6 +8,7 @@
 import heapq as heap
 import numpy as np
 import cv2
+import map
 
 
 def getAdjNodes(curr_node, validPoints, clearance, step):
@@ -186,19 +187,51 @@ def animate(map_len, map_bre, validPoints, closed, path, parent_map):
     validPoints : list of all valid points
     closed : list of all the explored nodes
     path: list of all the points from starting to goal position
+    parent_map : dict of nodes mapped to parent node_cost
     """
     map_frame = np.zeros((map_bre + 1, map_len + 1, 3))
     resize = (800, 500)
     for point in validPoints:
         map_frame[map_bre - point[1], point[0]] = [255, 255, 255]
+    cv2.circle(map_frame, (path[-1][0], map_bre
+               - path[-1][1]), 4, [255, 0, 0], -1)
+    cv2.circle(map_frame, (path[1][0], map_bre
+               - path[1][1]), 4, [255, 0, 255], -1)
     for point in closed:
-        map_frame[map_bre - point[1], point[0]] = [0, 127, 0]
-        if(point[0:2] == (50, 20)):
-            continue
+        parent = parent_map[point]
+        point[1] = map_bre - point[1]
+        parent[1] = map_bre - parent[1]
+        cv2.line(map_frame, point, parent, [255, 255, 0], 4)
         cv2.imshow('map_frame', cv2.resize(map_frame, resize))
         cv2.waitKey(1)
     for point in path:
         map_frame[map_bre - point[1], point[0]] = [0, 0, 127]
         cv2.imshow('map_frame', cv2.resize(map_frame, resize))
         cv2.waitKey(1)
+    print('done, press any key to exit..')
     cv2.waitKey(0)
+
+
+if __name__ == '__main__':
+    map_len = 400
+    map_bre = 250
+    clearance = 0
+    radius = 15
+    step = 5
+    thresh = 1.5
+
+    print('Please wait...')
+    validPoints = map.listOfValidPoints(map_len, map_bre, radius)
+
+    start = 40, 20, 0
+    goal = 150, 100, 0
+    print('starting')
+    reached, parent_map, closed = astar(
+        start, goal, validPoints, clearance, step, thresh)
+    if reached:
+        print('reached')
+        path = getPath(parent_map, start, goal, closed)
+        print(path)
+        animate(map_len, map_bre, validPoints, closed, path, parent_map)
+    else:
+        print('lol')
