@@ -41,5 +41,5 @@ This ***videos*** folder contains example video for: <br>
 clearance: 5 <br>
 radius: 10 <br>
 step-size: 10 <br>
-test1.mp4: start = (100, 180, 0) and goal = (130, 230, 0) <br>
-test2.mp4: start = (40, 20, -180) and goal = (150, 100, 0)
+test1.mp4: start = (40, 20, 90) and goal = (150, 100, 0) <br>
+test2.mp4: start = (100, 180, 0) and goal = (130, 230, 0)
