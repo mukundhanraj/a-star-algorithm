@@ -6,7 +6,7 @@ all units are in mm and degrees.
 # a-star-algorithm
 Finding the optimal path from start node to goal node on a predefined map using A Star algorithm
 
-**Action Space of Robot**
+**Action Space of Robot** <br>
 ![Action Space of Robot](/res/action.png "Action Space of Robot") <br>
 Action Sets = {-60, -30, 0, 30, 60} <br>
 L = step size <br>
