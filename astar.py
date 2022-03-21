@@ -8,7 +8,6 @@
 import heapq as heap
 import numpy as np
 import cv2
-import map
 
 
 def getAdjNodes(curr_node, validPoints, clearance, step):
@@ -22,6 +21,7 @@ def getAdjNodes(curr_node, validPoints, clearance, step):
     curr_node : node of intrest
     validPoints : list of all valid points
     clearance : minimum distance required from obstacles
+    step : step size for each movement
 
     Returns
     ---
@@ -66,6 +66,7 @@ def updateNode(new_node, curr_node, node_cost, queue, parent_map, cost, goal,
     parent_map : dict of nodes mapped to parent node_cost
     cost : cost to get to new node from parent node
     goal : goal node
+    thresh : Threshold from goal point
 
     Returns
     ---
@@ -102,6 +103,8 @@ def astar(start, goal, validPoints, clearance, step, thresh):
     goal : goal node
     validPoints : list of all valid points
     clearance : minimum distance required from obstacles
+    step : step size for each movement
+    thresh : Threshold from goal point
 
     Returns
     ---
@@ -132,7 +135,8 @@ def astar(start, goal, validPoints, clearance, step, thresh):
                 continue
             print('checking for node: ', new_node[0:2])
             flag, node_cost, queue, parent_map = updateNode(
-                new_node, curr_node, node_cost, queue, parent_map, cost, goal, thresh)
+                new_node, curr_node, node_cost, queue, parent_map, cost,
+                goal, thresh)
             if flag:
                 closed.append(new_node[0:2])
                 reached = True
@@ -151,6 +155,7 @@ def getPath(parent_map, start, goal, closed):
     parent_map : dict of nodes mapped to parent node_cost
     start : starting node
     goal : goal node
+    closed : list of all the explored nodes
 
     Returns
     ---
@@ -197,28 +202,3 @@ def animate(map_len, map_bre, validPoints, closed, path, parent_map):
         cv2.imshow('map_frame', cv2.resize(map_frame, resize))
         cv2.waitKey(1)
     cv2.waitKey(0)
-
-
-if __name__ == '__main__':
-    map_len = 400
-    map_bre = 250
-    clearance = 0
-    radius = 15
-    step = 5
-    thresh = 1.5
-
-    print('Please wait...')
-    validPoints = map.listOfValidPoints(map_len, map_bre, radius)
-
-    start = 40, 20, 0
-    goal = 150, 100, 0
-    print('starting')
-    reached, parent_map, closed = astar(
-        start, goal, validPoints, clearance, step, thresh)
-    if reached:
-        print('reached')
-        path = getPath(parent_map, start, goal, closed)
-        print(path)
-        animate(map_len, map_bre, validPoints, closed, path, parent_map)
-    else:
-        print('lol')
