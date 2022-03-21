@@ -8,7 +8,7 @@ Finding the optimal path from start node to goal node on a predefined map using 
 
 <br>
 **Map**
-![Map](/res/map.png "Map")
+![Map](res/map.png "Map")
 
 ## To install the dependencies
 ```
